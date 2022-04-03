@@ -20,6 +20,8 @@ public class Player_Controller : MonoBehaviour
         SlowWalk();
         InteractWithSmth();
         GrabObj();
+        DragObj();
+        DropObj();
     }
 
     public float speed = 5, Jump_Power = 500, slow_speed = 2;
@@ -36,6 +38,7 @@ public class Player_Controller : MonoBehaviour
 
     private void Walk()
     {
+        Player_Body.transform.localScale = new Vector3(Player_Body.transform.localScale.x * 1, Player_Body.transform.localScale.y*1, Player_Body.transform.localScale.z*1);
         Player_Body.velocity = new Vector3(Input.GetAxis("Horizontal") * speed, Player_Body.velocity.y, Input.GetAxis("Vertical") * speed);
     }
 
@@ -78,27 +81,38 @@ public class Player_Controller : MonoBehaviour
             if (interactAim != null)
             {
                 Debug.Log(interactAim.name);
-                Debug.Log("Grabbed!");
+                
             }
         }
 
     }
     private void GrabObj()
     {
-        if (Input.GetKeyDown(KeyCode.E) && interactAim != null)
+        if (Input.GetKeyDown(KeyCode.E) && interactAim != null && grabbed == false)
         {
             interactAim.GetComponent<Rigidbody>().useGravity = false;
             interactAim.transform.position = GameObject.Find("Grabb_zone").transform.position;
+            GetComponentInChildren<SphereCollider>().enabled = false;
             grabbed = !grabbed;
+            Debug.Log("Grabbed!");
         }
-     //   DragObj(grabbed);
     }
-    private void DragObj(bool grabbed)
+    private void DragObj()
     {
-     //   if (grabbed)
-     //       GetComponent<SphereCollider>().enabled = false;
-     //   else if (interactAim != null) GetComponent<SphereCollider>().enabled = true;
+      if (grabbed && interactAim != null)
+            interactAim.transform.position = GameObject.Find("Grabb_zone").transform.position;
+    }
 
+    private void DropObj()
+    {
+        if (Input.GetKeyDown(KeyCode.F) && grabbed == true)
+        {
+            interactAim.GetComponent<Rigidbody>().useGravity = true;
+            interactAim.transform.position = GameObject.Find("Grabb_zone").transform.position;
+            GetComponentInChildren<SphereCollider>().enabled = true;
+            grabbed = !grabbed;
+            Debug.Log("Dropped!");
+        }
     }
 }
     
