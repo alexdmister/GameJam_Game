@@ -5,7 +5,6 @@ using UnityEngine;
 public class Player_Controller : MonoBehaviour
 {
     Rigidbody Player_Body;
-
     // Start is called before the first frame update
     void Start()
     {
@@ -15,6 +14,7 @@ public class Player_Controller : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        transform.LookAt(new Vector3(0, Player_Body.position.y, 0));
         Walk();
         Jump();
         SlowWalk();
@@ -24,7 +24,7 @@ public class Player_Controller : MonoBehaviour
         DropObj();
     }
 
-    public float speed = 5, Jump_Power = 500, slow_speed = 2;
+    public float speed = 5, speedrad = 5, Jump_Power = 500, slow_speed = 2;
     private bool onGround = true;
 
 
@@ -38,14 +38,15 @@ public class Player_Controller : MonoBehaviour
 
     private void Walk()
     {
-        Player_Body.transform.localScale = new Vector3(Player_Body.transform.localScale.x * 1, Player_Body.transform.localScale.y*1, Player_Body.transform.localScale.z*1);
-        Player_Body.velocity = new Vector3(Input.GetAxis("Horizontal") * speed, Player_Body.velocity.y, Input.GetAxis("Vertical") * speed);
+        Vector3 vec=((Player_Body.transform.forward * Input.GetAxis("Vertical") + Player_Body.transform.right * Input.GetAxis("Horizontal")) * speed);
+        Player_Body.velocity = new Vector3(vec.x, Player_Body.velocity.y,vec.z);
     }
 
     private void SlowWalk()
     {
+        Vector3 vec = ((Player_Body.transform.forward * Input.GetAxis("Vertical") + Player_Body.transform.right * Input.GetAxis("Horizontal")) * slow_speed);
         if (Input.GetKey(KeyCode.LeftShift))
-            Player_Body.velocity = new Vector3(Input.GetAxis("Horizontal") * slow_speed, Player_Body.velocity.y, Input.GetAxis("Vertical") * slow_speed);
+            Player_Body.velocity = new Vector3(vec.x, Player_Body.velocity.y, vec.z);
     }
 
     private void Jump()
